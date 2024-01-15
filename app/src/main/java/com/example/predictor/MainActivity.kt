@@ -4,23 +4,13 @@ import android.content.Context
 import android.graphics.*
 import android.os.Bundle
 import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.res.ResourcesCompat
 import org.pytorch.IValue
 import org.pytorch.Module
-import org.pytorch.Tensor
-import org.pytorch.Tensor.allocateByteBuffer
-import org.pytorch.Tensor.fromBlob
 import org.pytorch.torchvision.TensorImageUtils
 import java.io.File
 import java.io.FileOutputStream
-import java.io.InputStream
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,7 +26,6 @@ class MainActivity : AppCompatActivity() {
             predict()
         }
 
-//        module = Module.load(assetFilePath(this, "mymodel.pt"))
         module = Module.load(assetFilePath(this, "model.pt"))
     }
     fun assetFilePath(context: Context, assetName: String): String {
@@ -58,61 +47,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun predict() {
-
-//        val resizedBitmap:Bitmap = Bitmap.createScaledBitmap(
-//            MyCanvasView.extraBitmap,
-//            28,
-//            28,
-//            true
-//        )
-
-//        val byteBuffer:ByteBuffer = allocateByteBuffer(784*4)
-//        val pixels = IntArray(28 * 28)
-//        resizedBitmap.getPixels(pixels, 0, resizedBitmap.width, 0, 0, resizedBitmap.width, resizedBitmap.height)
-//
-//        var i = 0
         var bitmap = BitmapFactory.decodeStream(getAssets().open("leaf.jpg"));
-        val array = FloatArray(256*256)
-
-//        for (pixelValue in pixels) {
-//
-//            val r = (pixelValue shr 16 and 0xFF)
-//            val g = (pixelValue shr 8 and 0xFF)
-//            val b = (pixelValue and 0xFF)
-//
-//            // Convert RGB to grayscale and normalize pixel value to [0..1]
-//            val normalizedPixelValue = (r + g + b) / 3.0f / 255.0f
-//            byteBuffer.putFloat(normalizedPixelValue)
-//            array[i] = normalizedPixelValue
-//            i = i + 1
-//
-//        }
-
-        val inputTensor = Tensor.fromBlob(array, longArrayOf(1, 1, 256, 256))
-
+        val inputTensor = TensorImageUtils.bitmapToFloat32Tensor(bitmap,
+        TensorImageUtils.TORCHVISION_NORM_MEAN_RGB, TensorImageUtils.TORCHVISION_NORM_STD_RGB)
         val outputTensor = module.forward(IValue.from(inputTensor)).toTensor()
         val scores = outputTensor.dataAsFloatArray
+        val arg = argmax(scores)
+        val labels = arrayOf("Early blight", "Healthy", "Late blight")
+        Toast.makeText(applicationContext, labels[arg], Toast.LENGTH_SHORT).show();
+    }
 
-        var maxScore: Float = -9999F
-        var maxScoreIdx = -1
-        var maxSecondScore: Float = -999F
-        var maxSecondScoreIdx = -1
-
-
-        for (i in scores.indices) {
-            if (scores[i] > maxScore) {
-                maxSecondScore = maxScore
-                maxSecondScoreIdx = maxScoreIdx
-                maxScore = scores[i]
-                maxScoreIdx = i
+    fun argmax(array: FloatArray): Int {
+        var max = array[0]
+        var re = 0
+        for (i in 1 until array.size) {
+            if (array[i] > max) {
+                max = array[i]
+                re = i
             }
         }
-//        Toast.makeText(applicationContext, scores.toString(), Toast.LENGTH_SHORT).show();
-
-//        val predictedValue:TextView = findViewById(R.id.predictedValue_text)
-//        predictedValue.text = maxScoreIdx.toString()
-
-//        MyCanvasView.extraCanvas.drawColor(ResourcesCompat.getColor(resources, R.color.colorBackground, null))
-//        Toast.makeText(applicationContext,maxScoreIdx.toString(),Toast.LENGTH_SHORT).show()
+        return re
     }
+
+
 }

@@ -9,16 +9,6 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <com.example.predictor.MyCanvasView
-        android:id="@+id/drawableView"
-        android:layout_width="280dp"
-        android:layout_height="280dp"
-        android:layout_marginTop="52dp"
-        android:contentDescription="@string/canvasContentDescription"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <TextView
         android:id="@+id/predictedValue_text"
         android:layout_width="0dp"
@@ -31,7 +21,7 @@
         android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/drawableView" />
+        />
 
     <Button
         android:id="@+id/predict_button"

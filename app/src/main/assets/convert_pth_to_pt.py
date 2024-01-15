@@ -4,8 +4,6 @@ import torchvision
 from torchvision import models, datasets, transforms
 from torch.utils.mobile_optimizer import optimize_for_mobile
 
-#model = torchvision.models.mobilenet_v2(pretrained=True)
-
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model = models.resnet18(pretrained=True)
 num_ftrs = model.fc.in_features
