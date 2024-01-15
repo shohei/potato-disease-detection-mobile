@@ -36,7 +36,8 @@ class MainActivity : AppCompatActivity() {
             predict()
         }
 
-        module = Module.load(assetFilePath(this, "mymodel.pt"))
+//        module = Module.load(assetFilePath(this, "mymodel.pt"))
+        module = Module.load(assetFilePath(this, "model.pt"))
     }
     fun assetFilePath(context: Context, assetName: String): String {
         val file = File(context.filesDir, assetName)
@@ -58,35 +59,36 @@ class MainActivity : AppCompatActivity() {
 
     private fun predict() {
 
-        val resizedBitmap:Bitmap = Bitmap.createScaledBitmap(
-            MyCanvasView.extraBitmap,
-            28,
-            28,
-            true
-        )
+//        val resizedBitmap:Bitmap = Bitmap.createScaledBitmap(
+//            MyCanvasView.extraBitmap,
+//            28,
+//            28,
+//            true
+//        )
 
-        val byteBuffer:ByteBuffer = allocateByteBuffer(784*4)
-        val pixels = IntArray(28 * 28)
-        resizedBitmap.getPixels(pixels, 0, resizedBitmap.width, 0, 0, resizedBitmap.width, resizedBitmap.height)
+//        val byteBuffer:ByteBuffer = allocateByteBuffer(784*4)
+//        val pixels = IntArray(28 * 28)
+//        resizedBitmap.getPixels(pixels, 0, resizedBitmap.width, 0, 0, resizedBitmap.width, resizedBitmap.height)
+//
+//        var i = 0
+        var bitmap = BitmapFactory.decodeStream(getAssets().open("leaf.jpg"));
+        val array = FloatArray(256*256)
 
-        var i = 0
-        val array = FloatArray(28*28)
+//        for (pixelValue in pixels) {
+//
+//            val r = (pixelValue shr 16 and 0xFF)
+//            val g = (pixelValue shr 8 and 0xFF)
+//            val b = (pixelValue and 0xFF)
+//
+//            // Convert RGB to grayscale and normalize pixel value to [0..1]
+//            val normalizedPixelValue = (r + g + b) / 3.0f / 255.0f
+//            byteBuffer.putFloat(normalizedPixelValue)
+//            array[i] = normalizedPixelValue
+//            i = i + 1
+//
+//        }
 
-        for (pixelValue in pixels) {
-
-            val r = (pixelValue shr 16 and 0xFF)
-            val g = (pixelValue shr 8 and 0xFF)
-            val b = (pixelValue and 0xFF)
-
-            // Convert RGB to grayscale and normalize pixel value to [0..1]
-            val normalizedPixelValue = (r + g + b) / 3.0f / 255.0f
-            byteBuffer.putFloat(normalizedPixelValue)
-            array[i] = normalizedPixelValue
-            i = i + 1
-
-        }
-
-        val inputTensor = Tensor.fromBlob(array, longArrayOf(1, 1, 28, 28))
+        val inputTensor = Tensor.fromBlob(array, longArrayOf(1, 1, 256, 256))
 
         val outputTensor = module.forward(IValue.from(inputTensor)).toTensor()
         val scores = outputTensor.dataAsFloatArray
@@ -105,11 +107,12 @@ class MainActivity : AppCompatActivity() {
                 maxScoreIdx = i
             }
         }
+//        Toast.makeText(applicationContext, scores.toString(), Toast.LENGTH_SHORT).show();
 
-        val predictedValue:TextView = findViewById(R.id.predictedValue_text)
-        predictedValue.text = maxScoreIdx.toString()
+//        val predictedValue:TextView = findViewById(R.id.predictedValue_text)
+//        predictedValue.text = maxScoreIdx.toString()
 
-        MyCanvasView.extraCanvas.drawColor(ResourcesCompat.getColor(resources, R.color.colorBackground, null))
+//        MyCanvasView.extraCanvas.drawColor(ResourcesCompat.getColor(resources, R.color.colorBackground, null))
 //        Toast.makeText(applicationContext,maxScoreIdx.toString(),Toast.LENGTH_SHORT).show()
     }
 }
