@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import org.pytorch.IValue
@@ -48,6 +49,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun predict() {
         var bitmap = BitmapFactory.decodeStream(getAssets().open("leaf.jpg"));
+        val imView: ImageView = findViewById<ImageView>(R.id.imageView)
+        val bitmapScaled = Bitmap.createScaledBitmap(bitmap, 300, 300, true);
+        imView.setImageBitmap(bitmapScaled);
+
         val inputTensor = TensorImageUtils.bitmapToFloat32Tensor(bitmap,
         TensorImageUtils.TORCHVISION_NORM_MEAN_RGB, TensorImageUtils.TORCHVISION_NORM_STD_RGB)
         val outputTensor = module.forward(IValue.from(inputTensor)).toTensor()
